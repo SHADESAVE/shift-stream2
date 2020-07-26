@@ -1,4 +1,4 @@
-package com.example.shiftstream2.itemtypes
+package com.example.shiftstream2.presentation.ui.weather.list
 
 import androidx.recyclerview.widget.RecyclerView
 
