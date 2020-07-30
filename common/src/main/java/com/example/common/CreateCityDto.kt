@@ -1,7 +1,6 @@
 package com.example.common
 
-data class WeatherCity (
-    val id: Long,
+data class CreateCityDto (
     val name: String,
     val temperature: Double
 )
