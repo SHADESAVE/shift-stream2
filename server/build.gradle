@@ -21,6 +21,13 @@ group 'com.example.server'
 version '0.0.1'
 mainClassName = "io.ktor.server.netty.EngineMain"
 
+flyway {
+    url = System.getenv("DB_URL")
+    user = System.getenv("DB_USER")
+    password = System.getenv("DB_PASSWORD")
+    locations = "filesystem:resources/db/migration"
+}
+
 sourceSets {
     main.kotlin.srcDirs = main.java.srcDirs = ['src']
     test.kotlin.srcDirs = test.java.srcDirs = ['test']
