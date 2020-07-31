@@ -25,6 +25,8 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
+    //Some
+
     val dbUri = URI(environment.config.property("db.jdbcUrl").getString())
 
     val username: String = dbUri.userInfo.split(":")[0]
