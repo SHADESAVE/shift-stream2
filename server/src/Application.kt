@@ -39,7 +39,6 @@ fun Application.module(testing: Boolean = false) {
         init()
     }
 
-
     val repository = CityRepository()
 
     routing {
