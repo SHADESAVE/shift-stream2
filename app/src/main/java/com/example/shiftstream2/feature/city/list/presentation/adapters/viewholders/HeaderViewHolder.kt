@@ -2,7 +2,7 @@ package com.example.shiftstream2.feature.city.list.presentation.adapters.viewhol
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.shiftstream2.feature.city.list.domain.entity.Header
+import com.example.shiftstream2.feature.city.list.presentation.adapters.Header
 import kotlinx.android.synthetic.main.rv_header_item.view.*
 
 class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

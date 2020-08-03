@@ -1,4 +1,4 @@
-package com.example.shiftstream2.feature.city.list.domain.entity
+package com.example.shiftstream2.feature.city.list.presentation.adapters
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType

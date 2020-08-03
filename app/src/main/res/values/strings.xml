@@ -5,4 +5,7 @@
     <string name="loading">Загрузка...</string>
     <string name="Loading">Загрука...</string>
     <string name="error">Ошибка</string>
+    <string name="temperature">Температура</string>
+    <string name="City">Город</string>
+    <string name="Create_forecast">Создать прогноз</string>
 </resources>
