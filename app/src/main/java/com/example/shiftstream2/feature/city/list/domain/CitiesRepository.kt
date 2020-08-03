@@ -7,4 +7,5 @@ interface CitiesRepository {
 
     suspend fun getCities() : List<ItemType>
     suspend fun addForecast(forecast: CreateCityDto)
+    suspend fun deleteForecast(id: Long)
 }

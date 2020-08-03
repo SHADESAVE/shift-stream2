@@ -5,7 +5,7 @@ import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
 import com.example.shiftstream2.feature.city.list.presentation.adapters.viewholders.CityViewHolder
 import java.io.Serializable
 
-data class City(
+data class Forecast(
     val id: Long,
     val name: String,
     val temperature: Double

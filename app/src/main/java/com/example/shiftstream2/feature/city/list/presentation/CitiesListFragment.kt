@@ -10,12 +10,13 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shiftstream2.R
 import com.example.shiftstream2.feature.city.detail.presentation.CityDetailFragment
-import com.example.shiftstream2.feature.city.domain.entity.City
+import com.example.shiftstream2.feature.city.domain.entity.Forecast
 import com.example.shiftstream2.feature.city.domain.entity.NestedItem
 import com.example.shiftstream2.feature.city.list.di.CitiesListViewModelFactory
 import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
 import com.example.shiftstream2.feature.city.list.presentation.adapters.RecyclerViewAdapter
 import com.example.shiftstream2.feature.city.thirdscreen.presentation.ThirdFragment
+import com.example.shiftstream2.feature.utils.fragment.replaceFragment
 import com.example.shiftstream2.feature.utils.progress.Status
 import kotlinx.android.synthetic.main.create_weather_forecast_dialog.*
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -28,26 +29,17 @@ class CitiesListFragment : Fragment(R.layout.fragment_main) {
         val viewModel: CitiesListViewModel by viewModels {
             CitiesListViewModelFactory()
         }
-        val adapter = RecyclerViewAdapter {
-            viewModel.itemClicked(it)
-        }
 
-        lateinit var forecastCreateDialog: AlertDialog
-        forecastCreateDialog = AlertDialog
-            .Builder(view.context)
-            .setView(R.layout.create_weather_forecast_dialog)
-            .setPositiveButton("Создать") { _: DialogInterface, _: Int ->
-                viewModel.createForecast(
-                    forecastCreateDialog.dialog_notification_name.text.toString(),
-                    forecastCreateDialog.dialog_notification_desc.text.toString()
-                )
+        val adapter = RecyclerViewAdapter(
+            {
+                viewModel.itemClicked(it)
+            },
+            {
+                viewModel.delButtonClicked(it)
             }
-            .setNegativeButton("Отмена") { _: DialogInterface, _: Int -> }
-            .create()
+        )
 
-        create_forecast_fab.setOnClickListener {
-            viewModel.fabClicked(it)
-        }
+        val dialog = setupCreateForecastDialog(viewModel)
 
         viewModel.itemClickEvent.observe(viewLifecycleOwner, Observer(::itemClicked))
         viewModel.progressStatus.observe(viewLifecycleOwner, Observer(::statusChanged))
@@ -55,12 +47,33 @@ class CitiesListFragment : Fragment(R.layout.fragment_main) {
             setItemList(it, adapter)
         })
         viewModel.fabClickEvent.observe(viewLifecycleOwner, Observer {
-            fabClicked(forecastCreateDialog)
+            fabClicked(dialog)
         })
 
         main_rv.layoutManager = LinearLayoutManager(view.context)
         main_rv.adapter = adapter
         main_rv.setHasFixedSize(true)
+    }
+
+    private fun setupCreateForecastDialog(viewModel: CitiesListViewModel): AlertDialog {
+        lateinit var forecastCreateDialog: AlertDialog
+        forecastCreateDialog =
+            AlertDialog
+                .Builder(view?.context)
+                .setView(R.layout.create_weather_forecast_dialog)
+                .setPositiveButton("Создать") { _: DialogInterface, _: Int ->
+                    viewModel.createForecast(
+                        forecastCreateDialog.dialog_notification_name.text.toString(),
+                        forecastCreateDialog.dialog_notification_desc.text.toString()
+                    )
+                }
+                .setNegativeButton("Отмена") { _: DialogInterface, _: Int -> }
+                .create()
+
+        create_forecast_fab.setOnClickListener {
+            viewModel.fabClicked(it)
+        }
+        return forecastCreateDialog
     }
 
     private fun setItemList(list: List<ItemType>, adapter: RecyclerViewAdapter) {
@@ -87,27 +100,15 @@ class CitiesListFragment : Fragment(R.layout.fragment_main) {
         }
     }
 
-    private fun itemClicked(itemType: Any) {
+    private fun itemClicked(itemType: ItemType) {
         when (itemType) {
 
-            is City -> {
-                activity?.supportFragmentManager?.beginTransaction()?.replace(
-                    R.id.fragment_container,
-                    CityDetailFragment()
-                        .also {
-                            it.param1 = itemType
-                        }
-                )?.addToBackStack(null)?.commit()
+            is Forecast -> {
+                activity?.let { replaceFragment(it, CityDetailFragment(), itemType) }
             }
 
             is NestedItem -> {
-                activity?.supportFragmentManager?.beginTransaction()?.replace(
-                    R.id.fragment_container,
-                    ThirdFragment()
-                        .also {
-                            it.param1 = itemType
-                        }
-                )?.addToBackStack(null)?.commit()
+                activity?.let { replaceFragment(it, ThirdFragment(), itemType) }
             }
 
             else -> {

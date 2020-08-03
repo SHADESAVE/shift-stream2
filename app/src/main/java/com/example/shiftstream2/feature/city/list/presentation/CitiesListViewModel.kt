@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.common.CreateCityDto
+import com.example.shiftstream2.feature.city.domain.entity.Forecast
 import com.example.shiftstream2.feature.city.list.domain.AddForecastUseCase
+import com.example.shiftstream2.feature.city.list.domain.DeleteForecastUseCase
 import com.example.shiftstream2.feature.city.list.domain.GetCitiesUseCase
 import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
 import com.example.shiftstream2.feature.utils.progress.Status
@@ -15,11 +17,12 @@ import kotlinx.coroutines.launch
 
 class CitiesListViewModel(
     private val getCitiesUseCase: GetCitiesUseCase,
-    private val addForecastUseCase: AddForecastUseCase
+    private val addForecastUseCase: AddForecastUseCase,
+    private val deleteForecastUseCase: DeleteForecastUseCase
 ) : ViewModel() {
 
     val items = MutableLiveData<List<ItemType>>()
-    val itemClickEvent = SingleLiveEvent<Any>()
+    val itemClickEvent = SingleLiveEvent<ItemType>()
     val fabClickEvent = SingleLiveEvent<View>()
 
     var progressStatus = SingleLiveEvent<Int>()
@@ -41,7 +44,7 @@ class CitiesListViewModel(
         }
     }
 
-    fun itemClicked(itemType: Any) {
+    fun itemClicked(itemType: ItemType) {
         itemClickEvent(itemType)
     }
 
@@ -49,12 +52,24 @@ class CitiesListViewModel(
         fabClickEvent(view)
     }
 
-    fun createForecast(city: String, temperature: String) {
-
+    fun delButtonClicked(forecast: Forecast) {
         viewModelScope.launch {
             try {
                 progressStatus.value = Status.LOADING
-                addForecastUseCase.invoke(CreateCityDto(city, temperature.toDouble()))
+                deleteForecastUseCase(forecast.id)
+                updateList()
+            } catch (e: Exception) {
+                Log.d("deleteForecastError: ", e.toString())
+                progressStatus.value = Status.ERROR
+            }
+        }
+    }
+
+    fun createForecast(city: String, temperature: String) {
+        viewModelScope.launch {
+            try {
+                progressStatus.value = Status.LOADING
+                addForecastUseCase(CreateCityDto(city, temperature.toDouble()))
                 updateList()
             } catch (e: Exception) {
                 Log.d("addForecastError: ", e.toString())

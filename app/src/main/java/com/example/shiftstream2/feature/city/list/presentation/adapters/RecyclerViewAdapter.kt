@@ -6,14 +6,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.shiftstream2.R
+import com.example.shiftstream2.feature.city.domain.entity.Forecast
 import com.example.shiftstream2.feature.utils.adapter.diffNotifyChanges
 import com.example.shiftstream2.feature.city.list.presentation.adapters.viewholders.CityViewHolder
 import com.example.shiftstream2.feature.city.list.presentation.adapters.viewholders.HeaderViewHolder
 import com.example.shiftstream2.feature.city.list.presentation.adapters.viewholders.RecyclerViewHolder
+import kotlinx.android.synthetic.main.rv_city_item.view.*
 
 
 class RecyclerViewAdapter(
-    private val clickListener: (Any) -> Unit
+    private val clickListener: (ItemType) -> Unit,
+    private val forecastDeleteClickListener: (Forecast) -> Unit
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     private val list: MutableList<ItemType> = mutableListOf()
@@ -29,6 +32,9 @@ class RecyclerViewAdapter(
         if (holder is CityViewHolder) {
             holder.itemView.setOnClickListener {
                 clickListener(list[holder.adapterPosition])
+            }
+            holder.itemView.item_delete_button.setOnClickListener {
+                forecastDeleteClickListener(list[holder.adapterPosition] as Forecast)
             }
         }
 

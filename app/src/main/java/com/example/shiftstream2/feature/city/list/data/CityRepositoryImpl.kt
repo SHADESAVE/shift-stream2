@@ -10,4 +10,5 @@ class CityRepositoryImpl(
 
     override suspend fun getCities(): List<ItemType> = networkCityDataSource.getCities()
     override suspend fun addForecast(forecast: CreateCityDto) = networkCityDataSource.addForecast(forecast)
+    override suspend fun deleteForecast(id: Long) = networkCityDataSource.deleteForecast(id)
 }

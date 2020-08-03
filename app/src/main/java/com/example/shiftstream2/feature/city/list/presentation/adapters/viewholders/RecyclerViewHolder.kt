@@ -5,11 +5,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shiftstream2.feature.city.list.presentation.adapters.NestedRecyclerViewAdapter
 import com.example.shiftstream2.feature.city.domain.entity.NestedItem
+import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
 import kotlinx.android.synthetic.main.rv_nested_rv_item.view.*
 
 class RecyclerViewHolder(
     itemView: View,
-    nestedClickListener: (Any) -> Unit
+    nestedClickListener: (ItemType) -> Unit
 ) : RecyclerView.ViewHolder(itemView) {
 
     private val adapter = NestedRecyclerViewAdapter(nestedClickListener)

@@ -11,5 +11,6 @@ interface ItemType {
         const val HEADER = 0
         const val NESTED_HORIZONTAL_RECYCLERVIEW = 1
         const val LIST = 2
+        const val NESTED_ITEM = 3
     }
 }

@@ -11,6 +11,7 @@ interface NetworkCityDataSource {
 
     suspend fun getCities() : List<ItemType>
     suspend fun addForecast(forecast: CreateCityDto)
+    suspend fun deleteForecast(id: Long)
 }
 
 class NetworkCityDataSourceImpl(private val api: CitiesApi) : NetworkCityDataSource {
@@ -62,7 +63,11 @@ class NetworkCityDataSourceImpl(private val api: CitiesApi) : NetworkCityDataSou
     }
 
     override suspend fun addForecast(forecast: CreateCityDto) {
-        api.addWeatherPrediction(forecast)
+        api.addWeatherForecast(forecast)
+    }
+
+    override suspend fun deleteForecast(id: Long) {
+        api.deleteForecast(id)
     }
 
 }

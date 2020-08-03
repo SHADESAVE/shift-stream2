@@ -2,14 +2,14 @@ package com.example.shiftstream2.feature.utils.bundle
 
 import android.os.Bundle
 import android.os.Parcelable
-import com.example.shiftstream2.feature.city.domain.entity.City
+import com.example.shiftstream2.feature.city.domain.entity.Forecast
 import com.example.shiftstream2.feature.city.domain.entity.NestedItem
 import java.io.Serializable
 
 fun <T> Bundle.put(key: String, value: T) {
     when (value) {
 
-        is City -> putSerializable(key, value)
+        is Forecast -> putSerializable(key, value)
         is NestedItem -> putSerializable(key, value)
 
         is Boolean -> putBoolean(key, value)
