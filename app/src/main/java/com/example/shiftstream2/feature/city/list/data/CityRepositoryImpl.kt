@@ -7,5 +7,5 @@ class CityRepositoryImpl(
     private val networkCityDataSource: NetworkCityDataSource
 ) : CitiesRepository {
 
-    override fun getCities(): List<ItemType> = networkCityDataSource.getCities()
+    override suspend fun getCities(): List<ItemType> = networkCityDataSource.getCities()
 }

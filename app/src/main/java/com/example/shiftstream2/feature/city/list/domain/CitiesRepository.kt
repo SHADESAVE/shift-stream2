@@ -4,5 +4,5 @@ import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
 
 interface CitiesRepository {
 
-    fun getCities() : List<ItemType>
+    suspend fun getCities() : List<ItemType>
 }

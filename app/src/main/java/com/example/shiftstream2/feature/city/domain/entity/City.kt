@@ -6,6 +6,7 @@ import com.example.shiftstream2.feature.city.list.presentation.adapters.viewhold
 import java.io.Serializable
 
 data class City(
+    val id: Long,
     val name: String,
     val temperature: Double
 ) : ItemType, Serializable {

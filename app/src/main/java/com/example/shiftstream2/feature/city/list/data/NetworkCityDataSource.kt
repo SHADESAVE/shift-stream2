@@ -1,26 +1,23 @@
 package com.example.shiftstream2.feature.city.list.data
 
-import com.example.shiftstream2.feature.city.domain.entity.City
 import com.example.shiftstream2.feature.city.domain.entity.NestedItem
 import com.example.shiftstream2.feature.city.list.domain.entity.Header
 import com.example.shiftstream2.feature.city.list.domain.entity.NestedRecycler
 import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
-import java.math.RoundingMode
-import kotlin.random.Random
+import com.example.shiftstream2.feature.utils.toCity
 
 interface NetworkCityDataSource {
 
-    fun getCities() : List<ItemType>
+    suspend fun getCities() : List<ItemType>
 }
 
-class NetworkCityDataSourceImpl: NetworkCityDataSource {
+class NetworkCityDataSourceImpl(private val api: CitiesApi) : NetworkCityDataSource {
 
-    override fun getCities(): List<ItemType> {
+    override suspend fun getCities(): List<ItemType> {
 
-        val rnd = Random
-        val itemList = mutableListOf<ItemType>()
+        val cities = api.getAll().map { it.toCity() }
+
         val nestedList = mutableListOf<NestedItem>()
-
         for (i in 1..25) {
             nestedList.add(
                 NestedItem(
@@ -31,6 +28,8 @@ class NetworkCityDataSourceImpl: NetworkCityDataSource {
             )
         }
 
+        val itemList = mutableListOf<ItemType>()
+
         itemList.add(
             Header(
                 "Погода"
@@ -38,31 +37,12 @@ class NetworkCityDataSourceImpl: NetworkCityDataSource {
         )
 
         itemList.add(
-            City(
-                "Новосибирск",
-                (rnd.nextDouble(50.0) - rnd.nextDouble(50.0)).toBigDecimal()
-                    .setScale(1, RoundingMode.UP).toDouble()
-            )
-        )
-
-        itemList.add(
             NestedRecycler(
                 nestedList
             )
         )
 
-        itemList.add(
-            City(
-                "Томск",
-                (rnd.nextDouble(50.0) - rnd.nextDouble(50.0)).toBigDecimal()
-                    .setScale(1, RoundingMode.UP).toDouble()
-            )
-        )
-        itemList.add(
-            NestedRecycler(
-                nestedList
-            )
-        )
+        itemList.addAll(cities)
 
         itemList.add(
             Header(
@@ -70,15 +50,11 @@ class NetworkCityDataSourceImpl: NetworkCityDataSource {
             )
         )
 
-        for (i in 0..50) {
-            itemList.add(
-                City(
-                    "Город $i",
-                    (rnd.nextDouble(50.0) - rnd.nextDouble(50.0)).toBigDecimal()
-                        .setScale(1, RoundingMode.UP).toDouble()
-                )
+        itemList.add(
+            NestedRecycler(
+                nestedList
             )
-        }
+        )
 
         return itemList
     }
