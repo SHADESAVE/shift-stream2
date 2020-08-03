@@ -22,10 +22,10 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module(testing: Boolean = false) {
     install(ContentNegotiation) {
         gson {
+            setPrettyPrinting()
+            serializeNulls()
         }
     }
-
-    //Some
 
     val dbUri = URI(environment.config.property("db.jdbcUrl").getString())
 
@@ -60,6 +60,10 @@ fun Application.module(testing: Boolean = false) {
                     repository.delete(id)
                     call.respond(HttpStatusCode.OK)
                 }
+            }
+            put {
+                repository.update(call.receive())
+                call.respond(HttpStatusCode.OK)
             }
         }
     }
