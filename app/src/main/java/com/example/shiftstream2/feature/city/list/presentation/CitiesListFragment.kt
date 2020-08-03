@@ -14,6 +14,7 @@ import com.example.shiftstream2.feature.city.detail.presentation.CityDetailFragm
 import com.example.shiftstream2.feature.city.list.di.CitiesListViewModelFactory
 import com.example.shiftstream2.feature.city.thirdscreen.presentation.ThirdFragment
 import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
+import com.example.shiftstream2.feature.utils.progress.Status
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import kotlinx.android.synthetic.main.fragment_main.view.main_rv
@@ -30,6 +31,7 @@ class CitiesListFragment : Fragment(R.layout.fragment_main) {
             viewModel.itemClicked(it)
         }
 
+        viewModel.progressStatus.observe(viewLifecycleOwner, Observer(::statusChanged))
         viewModel.itemClickEvent.observe(viewLifecycleOwner, Observer(::itemClicked))
         viewModel.items.observe(viewLifecycleOwner, Observer {
             setItemList(it, adapter)
@@ -42,6 +44,23 @@ class CitiesListFragment : Fragment(R.layout.fragment_main) {
 
     private fun setItemList(list: List<ItemType>, adapter: RecyclerViewAdapter) {
         adapter.setList(list)
+    }
+
+    private fun statusChanged(status: Int) {
+        when(status) {
+            Status.LOADING -> {
+                error_text.visibility = View.GONE
+                progress_bar_layout.visibility = View.VISIBLE
+            }
+            Status.DONE -> {
+                error_text.visibility = View.GONE
+                progress_bar_layout.visibility = View.GONE
+            }
+            Status.ERROR -> {
+                progress_bar_layout.visibility = View.GONE
+                error_text.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun itemClicked(itemType: Any) {

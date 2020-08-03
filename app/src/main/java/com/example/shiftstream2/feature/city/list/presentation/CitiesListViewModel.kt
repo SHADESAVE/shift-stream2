@@ -1,5 +1,6 @@
 package com.example.shiftstream2.feature.city.list.presentation
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.example.shiftstream2.feature.city.domain.entity.NestedItem
 import com.example.shiftstream2.feature.city.list.domain.GetCitiesUseCase
 import com.example.shiftstream2.feature.city.list.domain.entity.NestedRecycler
 import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
+import com.example.shiftstream2.feature.utils.progress.Status
 import com.example.shiftstream2.feature.utils.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.launch
 import java.math.RoundingMode
@@ -20,13 +22,18 @@ class CitiesListViewModel(
 
     val items = MutableLiveData<List<ItemType>>()
     val itemClickEvent = SingleLiveEvent<Any>()
+    var progressStatus = SingleLiveEvent<Int>()
 
-    init {
+
+        init {
         viewModelScope.launch {
             try {
+                progressStatus.value = Status.LOADING
                 items.value = getCitiesUseCase()
+                progressStatus.value = Status.DONE
             } catch (e: Exception) {
-                //Отобразить ошибку, если нет интернета
+                Log.d("getCitiesError: ", e.toString())
+                progressStatus.value = Status.ERROR
             }
         }
     }
