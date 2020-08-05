@@ -3,10 +3,12 @@ package com.example.shiftstream2.feature.city.list.presentation.adapters
 import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.shiftstream2.R
 import com.example.shiftstream2.feature.city.domain.entity.Forecast
+import com.example.shiftstream2.feature.city.list.presentation.CitiesDiffUtilCallback
 import com.example.shiftstream2.feature.utils.adapter.diffNotifyChanges
 import com.example.shiftstream2.feature.city.list.presentation.adapters.viewholders.CityViewHolder
 import com.example.shiftstream2.feature.city.list.presentation.adapters.viewholders.HeaderViewHolder
@@ -15,26 +17,26 @@ import kotlinx.android.synthetic.main.rv_city_item.view.*
 
 
 class RecyclerViewAdapter(
+    private val citiesDiffUtilCallback: CitiesDiffUtilCallback,
     private val clickListener: (ItemType) -> Unit,
     private val forecastDeleteClickListener: (Forecast) -> Unit
-) : RecyclerView.Adapter<ViewHolder>() {
+) : PagedListAdapter<ItemType, ViewHolder>(citiesDiffUtilCallback) {
 
-    private val list: MutableList<ItemType> = mutableListOf()
     private val positionList = SparseIntArray()
     private val viewPool = RecyclerView.RecycledViewPool()
 
     override fun getItemViewType(position: Int): Int =
-        list[position].getItemViewType()
+        getItem(position)?.getItemViewType()!!
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val holder = setViewHolder(parent, viewType)
 
         if (holder is CityViewHolder) {
             holder.itemView.setOnClickListener {
-                clickListener(list[holder.adapterPosition])
+                getItem(holder.adapterPosition)?.let { it1 -> clickListener(it1) }
             }
             holder.itemView.item_delete_button.setOnClickListener {
-                forecastDeleteClickListener(list[holder.adapterPosition] as Forecast)
+                forecastDeleteClickListener(getItem(holder.adapterPosition) as Forecast)
             }
         }
 
@@ -45,12 +47,8 @@ class RecyclerViewAdapter(
         return holder
     }
 
-
-    override fun getItemCount(): Int =
-        list.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        list[position].onBindViewHolder(holder, position)
+        getItem(position)?.onBindViewHolder(holder, position)
 
         // Пытаемся вернуть позицию вложенного ресайклера
 
@@ -71,19 +69,6 @@ class RecyclerViewAdapter(
         positionList.put(position, firstVisiblePosition)
 
         super.onViewRecycled(viewHolder)
-    }
-
-    fun setList(newList: List<ItemType>) {
-
-        val diff = diffNotifyChanges(
-            list,
-            newList
-        ) { old, new ->
-            old == new
-        }
-        list.clear()
-        list.addAll(newList)
-        diff.dispatchUpdatesTo(this)
     }
 
     private fun setViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =

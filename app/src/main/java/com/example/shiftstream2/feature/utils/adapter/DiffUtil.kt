@@ -1,6 +1,7 @@
 package com.example.shiftstream2.feature.utils.adapter
 
 import androidx.recyclerview.widget.DiffUtil
+import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
 
 
 fun <T> diffNotifyChanges(

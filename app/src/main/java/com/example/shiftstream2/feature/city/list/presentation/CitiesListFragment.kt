@@ -7,6 +7,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shiftstream2.R
 import com.example.shiftstream2.feature.city.detail.presentation.CityDetailFragment
@@ -31,28 +32,25 @@ class CitiesListFragment : Fragment(R.layout.fragment_main) {
         }
 
         val adapter = RecyclerViewAdapter(
-            {
-                viewModel.itemClicked(it)
-            },
-            {
-                viewModel.delButtonClicked(it)
-            }
+            CitiesDiffUtilCallback(),
+            { itemType -> viewModel.itemClicked(itemType) },
+            { forecast -> viewModel.delButtonClicked(forecast) }
         )
 
         val dialog = setupCreateForecastDialog(viewModel)
 
         viewModel.itemClickEvent.observe(viewLifecycleOwner, Observer(::itemClicked))
         viewModel.progressStatus.observe(viewLifecycleOwner, Observer(::statusChanged))
-        viewModel.items.observe(viewLifecycleOwner, Observer {
-            setItemList(it, adapter)
-        })
         viewModel.fabClickEvent.observe(viewLifecycleOwner, Observer {
             fabClicked(dialog)
         })
 
         main_rv.layoutManager = LinearLayoutManager(view.context)
-        main_rv.adapter = adapter
         main_rv.setHasFixedSize(true)
+
+        viewModel.items.observe(viewLifecycleOwner, Observer {
+            setItemList(it, adapter)
+        })
     }
 
     private fun setupCreateForecastDialog(viewModel: CitiesListViewModel): AlertDialog {
@@ -76,8 +74,9 @@ class CitiesListFragment : Fragment(R.layout.fragment_main) {
         return forecastCreateDialog
     }
 
-    private fun setItemList(list: List<ItemType>, adapter: RecyclerViewAdapter) {
-        adapter.setList(list)
+    private fun setItemList(list: PagedList<ItemType>, adapter: RecyclerViewAdapter) {
+        adapter.submitList(list)
+        main_rv.adapter = adapter
     }
 
     private fun statusChanged(status: Int) {

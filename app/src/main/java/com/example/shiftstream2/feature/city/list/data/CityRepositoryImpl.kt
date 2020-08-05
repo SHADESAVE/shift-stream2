@@ -9,6 +9,7 @@ class CityRepositoryImpl(
 ) : CitiesRepository {
 
     override suspend fun getCities(): List<ItemType> = networkCityDataSource.getCities()
+    override suspend fun getPage(start: Long, size: Int): List<ItemType> = networkCityDataSource.getPage(start, size)
     override suspend fun addForecast(forecast: CreateCityDto) = networkCityDataSource.addForecast(forecast)
     override suspend fun deleteForecast(id: Long) = networkCityDataSource.deleteForecast(id)
 }

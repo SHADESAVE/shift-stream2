@@ -35,11 +35,7 @@ class CitiesListViewModelFactory : ViewModelProvider.Factory {
             val networkDataSource = NetworkCityDataSourceImpl(api)
             val cityRepository = CityRepositoryImpl(networkDataSource)
 
-            val getCitiesUseCase = GetCitiesUseCase(cityRepository)
-            val addForecastUseCase = AddForecastUseCase(cityRepository)
-            val deleteForecastUseCase = DeleteForecastUseCase(cityRepository)
-
-            return CitiesListViewModel(getCitiesUseCase, addForecastUseCase, deleteForecastUseCase) as T
+            return CitiesListViewModel(cityRepository) as T
         } else {
             error("Unexpected class $modelClass")
         }

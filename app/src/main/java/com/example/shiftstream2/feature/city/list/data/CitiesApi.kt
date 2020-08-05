@@ -10,6 +10,9 @@ interface CitiesApi {
     @GET("/weather/prediction")
     suspend fun getAll(): List<WeatherCity>
 
+    @GET("/weather/prediction")
+    suspend fun getPage(@Query("start") start: Long, @Query("size") size: Int) : List<WeatherCity>
+
     @POST("/weather/prediction")
     suspend fun addWeatherForecast(@Body createCityDto: CreateCityDto): ResponseBody
 

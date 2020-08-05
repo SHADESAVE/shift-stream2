@@ -2,40 +2,44 @@ package com.example.shiftstream2.feature.city.list.presentation
 
 import android.util.Log
 import android.view.View
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Config
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import com.example.common.CreateCityDto
 import com.example.shiftstream2.feature.city.domain.entity.Forecast
-import com.example.shiftstream2.feature.city.list.domain.AddForecastUseCase
-import com.example.shiftstream2.feature.city.list.domain.DeleteForecastUseCase
-import com.example.shiftstream2.feature.city.list.domain.GetCitiesUseCase
+import com.example.shiftstream2.feature.city.list.domain.*
 import com.example.shiftstream2.feature.city.list.presentation.adapters.ItemType
+import com.example.shiftstream2.feature.city.list.presentation.adapters.RecyclerViewAdapter
 import com.example.shiftstream2.feature.utils.progress.Status
 import com.example.shiftstream2.feature.utils.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.launch
 
 class CitiesListViewModel(
-    private val getCitiesUseCase: GetCitiesUseCase,
-    private val addForecastUseCase: AddForecastUseCase,
-    private val deleteForecastUseCase: DeleteForecastUseCase
+    private val cityRepository: CitiesRepository
 ) : ViewModel() {
 
-    val items = MutableLiveData<List<ItemType>>()
     val itemClickEvent = SingleLiveEvent<ItemType>()
     val fabClickEvent = SingleLiveEvent<View>()
 
     var progressStatus = SingleLiveEvent<Int>()
 
-    init {
-        updateList()
-    }
+    private val factory = CityDataSourceFactory(cityRepository, viewModelScope)
+    private val config = Config(
+        pageSize = 10,
+        prefetchDistance = 1,
+        enablePlaceholders = false
+    )
+
+    val items: LiveData<PagedList<ItemType>> = LivePagedListBuilder(factory, config).build()
 
     private fun updateList() {
         viewModelScope.launch {
             try {
                 progressStatus.value = Status.LOADING
-                items.value = getCitiesUseCase()
+                items.value?.dataSource?.invalidate()
                 progressStatus.value = Status.DONE
             } catch (e: Exception) {
                 Log.d("getCitiesError: ", e.toString())
@@ -52,11 +56,13 @@ class CitiesListViewModel(
         fabClickEvent(view)
     }
 
-    fun delButtonClicked(forecast: Forecast) {
+    fun delButtonClicked(
+        forecast: Forecast
+    ) {
         viewModelScope.launch {
             try {
                 progressStatus.value = Status.LOADING
-                deleteForecastUseCase(forecast.id)
+                cityRepository.deleteForecast(forecast.id)
                 updateList()
             } catch (e: Exception) {
                 Log.d("deleteForecastError: ", e.toString())
@@ -69,7 +75,7 @@ class CitiesListViewModel(
         viewModelScope.launch {
             try {
                 progressStatus.value = Status.LOADING
-                addForecastUseCase(CreateCityDto(city, temperature.toDouble()))
+                cityRepository.addForecast(CreateCityDto(city, temperature.toDouble()))
                 updateList()
             } catch (e: Exception) {
                 Log.d("addForecastError: ", e.toString())
