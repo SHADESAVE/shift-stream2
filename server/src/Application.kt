@@ -46,7 +46,13 @@ fun Application.module(testing: Boolean = false) {
     routing {
         route("/weather/prediction") {
             get {
-                call.respond(repository.getAll())
+                val start = call.request.queryParameters["start"]?.toLong()
+                val size = call.request.queryParameters["size"]?.toInt()
+                if (start == null || size == null) {
+                    call.respond(repository.getAll())
+                } else {
+                    call.respond(repository.getPage(start, size))
+                }
             }
             post {
                 repository.add(call.receive())

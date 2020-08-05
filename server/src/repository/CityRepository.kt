@@ -5,16 +5,19 @@ import com.example.common.WeatherCity
 import com.example.server.db.dbQuery
 import com.example.server.db.table.Cities
 import com.example.server.db.table.toWeatherCity
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
 
 class CityRepository {
 
     suspend fun getAll() = dbQuery {
         Cities.selectAll().map { it.toWeatherCity() }
+    }
+
+    suspend fun getPage(start: Long, size: Int) = dbQuery {
+        Cities.select {
+            Cities.id.greater(start)
+        }.limit(size).map { it.toWeatherCity() }
     }
 
     suspend fun add(createCityDto: CreateCityDto) = dbQuery {
