@@ -2,6 +2,7 @@ package com.example.shiftstream2.feature.city.list.presentation
 
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,7 +24,8 @@ class CitiesListViewModel(
 
     val itemClickEvent = SingleLiveEvent<ItemType>()
     val fabClickEvent = SingleLiveEvent<View>()
-
+    val emptyNameEvent = SingleLiveEvent<Unit>()
+    val emptyTemperatureEvent = SingleLiveEvent<Unit>()
     var progressStatus = SingleLiveEvent<Int>()
 
     private val factory = CityDataSourceFactory(cityRepository, viewModelScope)
@@ -65,22 +67,27 @@ class CitiesListViewModel(
                 cityRepository.deleteForecast(forecast.id)
                 updateList()
             } catch (e: Exception) {
-                Log.d("deleteForecastError: ", e.toString())
+                Log.e("deleteForecastError: ", e.toString())
                 progressStatus.value = Status.ERROR
             }
         }
     }
 
     fun createForecast(city: String, temperature: String) {
-        viewModelScope.launch {
-            try {
-                progressStatus.value = Status.LOADING
-                cityRepository.addForecast(CreateCityDto(city, temperature.toDouble()))
-                updateList()
-            } catch (e: Exception) {
-                Log.d("addForecastError: ", e.toString())
-                progressStatus.value = Status.ERROR
-            }
+        when {
+            city.isEmpty() -> emptyNameEvent(Unit)
+            temperature.isEmpty() -> emptyTemperatureEvent(Unit)
+            else ->
+                viewModelScope.launch {
+                    try {
+                        progressStatus.value = Status.LOADING
+                        cityRepository.addForecast(CreateCityDto(city, temperature.toDouble()))
+                        updateList()
+                    } catch (e: Exception) {
+                        Log.e("addForecastError: ", e.toString())
+                        progressStatus.value = Status.ERROR
+                    }
+                }
         }
     }
 }

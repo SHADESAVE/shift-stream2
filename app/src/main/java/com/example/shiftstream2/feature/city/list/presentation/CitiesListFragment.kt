@@ -3,7 +3,9 @@ package com.example.shiftstream2.feature.city.list.presentation
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -41,8 +43,15 @@ class CitiesListFragment : Fragment(R.layout.fragment_main) {
 
         viewModel.itemClickEvent.observe(viewLifecycleOwner, Observer(::itemClicked))
         viewModel.progressStatus.observe(viewLifecycleOwner, Observer(::statusChanged))
+
         viewModel.fabClickEvent.observe(viewLifecycleOwner, Observer {
             fabClicked(dialog)
+        })
+        viewModel.emptyNameEvent.observe(viewLifecycleOwner, Observer {
+            Toast.makeText(activity, "Пустое поле город", Toast.LENGTH_SHORT).show()
+        })
+        viewModel.emptyTemperatureEvent.observe(viewLifecycleOwner, Observer {
+            Toast.makeText(activity, "Пустое поле температура", Toast.LENGTH_SHORT).show()
         })
 
         main_rv.layoutManager = LinearLayoutManager(view.context)
@@ -120,4 +129,7 @@ class CitiesListFragment : Fragment(R.layout.fragment_main) {
         dialog.show()
     }
 
+    private fun toast(text: String) {
+
+    }
 }
