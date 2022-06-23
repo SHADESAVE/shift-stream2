@@ -75,7 +75,7 @@ fun Application.module(testing: Boolean = false) {
 
         route("/sample") {
             get {
-                call.respond("Sample text!")
+                call.respond("Sample text")
             }
         }
     }
