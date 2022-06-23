@@ -72,6 +72,12 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(HttpStatusCode.OK)
             }
         }
+
+        route("/sample") {
+            get {
+                call.respond("Sample text!")
+            }
+        }
     }
 }
 
